@@ -1,21 +1,29 @@
-import { useEffect, useState } from "react";
 import "@radix-ui/themes/styles.css";
 import "./App.css";
 import { Box, Text, Card, Flex } from "@radix-ui/themes";
 import { api } from "./lib/api";
+import { useQuery } from "@tanstack/react-query";
+
+async function fetchTotalSpent() {
+  const res = await api.expenses["total-expenses"].$get();
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch total spent");
+  }
+
+  const data = await res.json();
+  return data;
+}
 
 function App() {
-  const [totalSpent, setTotalSpent] = useState(0);
+  const { isPending, error, data } = useQuery({
+    queryKey: ["get-total-spent"],
+    queryFn: fetchTotalSpent,
+  });
 
-  useEffect(() => {
-    async function fetchTotalSpent() {
-      const res = await api.expenses["total-expenses"].$get();
-      const data = await res.json();
-      setTotalSpent(data.totalSpent);
-    }
-
-    fetchTotalSpent();
-  }, []);
+  if (error) {
+    return <Text color="red">Error: {error.message}</Text>;
+  }
 
   return (
     <Box className="w-[350px] m-auto">
@@ -29,7 +37,7 @@ function App() {
               The total amount you've spent
             </Text>
           </Box>
-          <Text>{totalSpent}</Text>
+          <Text>{isPending ? "..." : data.totalSpent}</Text>
         </Flex>
       </Card>
     </Box>
