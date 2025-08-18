@@ -1,8 +1,7 @@
-import "@radix-ui/themes/styles.css";
-import "./App.css";
-import { Box, Text, Card, Flex } from "@radix-ui/themes";
-import { api } from "./lib/api";
+import { api } from "../lib/api";
+import { Box, Card, Flex, Text } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 
 async function fetchTotalSpent() {
   const res = await api.expenses["total-expenses"].$get();
@@ -15,7 +14,11 @@ async function fetchTotalSpent() {
   return data;
 }
 
-function App() {
+export const Route = createFileRoute("/")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const { isPending, error, data } = useQuery({
     queryKey: ["get-total-spent"],
     queryFn: fetchTotalSpent,
@@ -43,5 +46,3 @@ function App() {
     </Box>
   );
 }
-
-export default App;
