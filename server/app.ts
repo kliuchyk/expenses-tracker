@@ -14,6 +14,7 @@ app.get("/", (c) => {
   return c.text("Hello, Hono!");
 });
 
-app.route("/api/expenses", expensesRoute);
+const apiRoutes = app.basePath("/api").route("/expenses", expensesRoute);
 
+export type ApiRoutes = typeof apiRoutes;
 export default app;
